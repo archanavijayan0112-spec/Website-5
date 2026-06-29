@@ -1,0 +1,1392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>FloodGuard — Kerala Disaster Management Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+/* ── Reset & Base ──────────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Inter',sans-serif;
+  background:#0B1F3A;
+  color:#EBF2F8;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:inherit;text-decoration:none}
+
+/* ── Tokens ────────────────────────────────────────────────────────── */
+:root{
+  --navy:#0B1F3A;
+  --navy-mid:#122844;
+  --navy-light:#1A3657;
+  --navy-card:#0F2743;
+  --red:#D63B3B;
+  --red-dim:#A02C2C;
+  --amber:#E8941A;
+  --amber-dim:#B86F0D;
+  --green:#2D8A4E;
+  --green-dim:#1E6035;
+  --mist:#EBF2F8;
+  --mist-dim:#B8CDD9;
+  --blue-accent:#3A8ECC;
+  --white:#FFFFFF;
+  --border:rgba(235,242,248,.1);
+  --border-strong:rgba(235,242,248,.2);
+}
+
+/* ── Status bar ────────────────────────────────────────────────────── */
+.status-bar{
+  background:#D63B3B;
+  padding:9px 24px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:12px;
+  font-weight:500;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  position:sticky;top:0;z-index:100;
+}
+.pulse-dot{
+  width:7px;height:7px;border-radius:50%;
+  background:#fff;flex-shrink:0;
+  animation:blink 1.4s ease infinite;
+}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.status-bar .right{margin-left:auto;opacity:.85;font-size:11px;text-transform:none;letter-spacing:0}
+
+/* ── Nav ───────────────────────────────────────────────────────────── */
+nav{
+  background:var(--navy);
+  border-bottom:1px solid var(--border);
+  padding:0 32px;
+  display:flex;
+  align-items:center;
+  gap:0;
+  height:62px;
+  position:sticky;top:35px;z-index:99;
+}
+.nav-logo{
+  display:flex;align-items:center;gap:10px;
+  font-family:'Barlow Condensed',sans-serif;
+  font-weight:700;font-size:22px;letter-spacing:.02em;
+  color:var(--mist);margin-right:48px;
+  flex-shrink:0;
+}
+.nav-logo .shield{font-size:24px;line-height:1}
+.nav-links{display:flex;gap:0;flex:1}
+.nav-link{
+  padding:0 18px;height:62px;
+  display:flex;align-items:center;
+  font-size:13px;font-weight:500;color:var(--mist-dim);
+  transition:color .2s,border-color .2s;
+  border-bottom:2px solid transparent;
+}
+.nav-link:hover{color:var(--mist);border-color:var(--blue-accent)}
+.nav-link.active{color:var(--mist);border-color:var(--amber)}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.btn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:8px 18px;border-radius:6px;
+  font-size:13px;font-weight:600;cursor:pointer;
+  border:1.5px solid transparent;transition:all .2s;
+  font-family:'Inter',sans-serif;
+}
+.btn-ghost{border-color:var(--border-strong);color:var(--mist-dim)}
+.btn-ghost:hover{border-color:var(--mist-dim);color:var(--mist)}
+.btn-red{background:var(--red);color:#fff;border-color:var(--red)}
+.btn-red:hover{background:var(--red-dim)}
+.btn-amber{background:var(--amber);color:#0B1F3A;border-color:var(--amber);font-weight:700}
+.btn-amber:hover{background:var(--amber-dim)}
+.btn-outline-mist{border-color:var(--mist);color:var(--mist)}
+.btn-outline-mist:hover{background:rgba(235,242,248,.07)}
+
+/* ── Hero ──────────────────────────────────────────────────────────── */
+.hero{
+  position:relative;overflow:hidden;
+  background:var(--navy);
+  min-height:88vh;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  align-items:center;
+  gap:0;
+}
+.hero-left{
+  padding:72px 56px 72px 64px;
+  position:relative;z-index:2;
+}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(214,59,59,.15);border:1px solid rgba(214,59,59,.3);
+  color:#F08080;border-radius:4px;
+  padding:5px 12px;font-size:11.5px;font-weight:600;
+  text-transform:uppercase;letter-spacing:.08em;margin-bottom:24px;
+}
+.hero-title{
+  font-family:'Barlow Condensed',sans-serif;
+  font-weight:800;font-size:clamp(56px,5.5vw,80px);
+  line-height:.97;letter-spacing:-.01em;
+  color:var(--mist);margin-bottom:20px;
+}
+.hero-title em{
+  font-style:normal;color:var(--amber);
+  display:block;
+}
+.hero-subtitle{
+  font-size:16px;line-height:1.65;
+  color:var(--mist-dim);max-width:420px;
+  margin-bottom:36px;font-weight:400;
+}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:48px}
+.hero-stats{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:1px;background:var(--border);
+  border:1px solid var(--border);border-radius:10px;overflow:hidden;
+  max-width:440px;
+}
+.hero-stat{
+  background:var(--navy-card);
+  padding:16px 18px;
+}
+.hero-stat-val{
+  font-family:'Barlow Condensed',sans-serif;
+  font-weight:700;font-size:30px;color:var(--mist);line-height:1;
+}
+.hero-stat-val.red{color:var(--red)}
+.hero-stat-val.amber{color:var(--amber)}
+.hero-stat-val.green{color:#4EC97B}
+.hero-stat-label{font-size:11px;color:var(--mist-dim);margin-top:4px;font-weight:500;text-transform:uppercase;letter-spacing:.04em}
+
+/* ── Hero right — water rise visualisation ─────────────────────────── */
+.hero-right{
+  position:relative;height:88vh;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+}
+.water-scene{
+  position:relative;width:100%;height:100%;
+  background:linear-gradient(180deg,#0B1F3A 0%,#0F2743 60%,#112240 100%);
+}
+.water-body{
+  position:absolute;bottom:0;left:0;right:0;
+  background:linear-gradient(180deg,rgba(58,142,204,.4) 0%,rgba(10,60,110,.9) 100%);
+  animation:waterRise 18s ease-in-out infinite alternate;
+  transition:height .5s;
+}
+@keyframes waterRise{
+  0%{height:28%}
+  100%{height:58%}
+}
+.wave-svg{
+  position:absolute;top:-48px;left:0;right:0;width:100%;
+  animation:waveDrift 6s ease-in-out infinite;
+}
+@keyframes waveDrift{
+  0%,100%{transform:translateX(0)}
+  50%{transform:translateX(-4%)}
+}
+.flood-buildings{
+  position:absolute;bottom:0;left:0;right:0;
+  display:flex;align-items:flex-end;gap:0;
+  padding:0 20px;
+}
+/* city silhouette using CSS */
+.bld{
+  background:rgba(11,31,58,.9);border-top:2px solid rgba(235,242,248,.15);
+  flex-shrink:0;
+  position:relative;
+}
+.bld::before{
+  content:'';position:absolute;top:-1px;left:50%;transform:translateX(-50%);
+  width:4px;height:8px;background:rgba(235,242,248,.2);border-radius:2px 2px 0 0;
+}
+.water-level-indicator{
+  position:absolute;right:32px;top:50%;transform:translateY(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+}
+.wl-label{
+  font-size:11px;font-weight:600;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--mist-dim);writing-mode:vertical-rl;
+  transform:rotate(180deg);margin-bottom:8px;
+}
+.wl-bar{
+  width:6px;height:240px;background:rgba(235,242,248,.1);
+  border-radius:3px;overflow:hidden;position:relative;
+}
+.wl-fill{
+  position:absolute;bottom:0;left:0;right:0;
+  background:linear-gradient(180deg,var(--red) 0%,var(--amber) 60%,var(--blue-accent) 100%);
+  border-radius:3px;
+  animation:levelFill 18s ease-in-out infinite alternate;
+}
+@keyframes levelFill{
+  0%{height:38%}
+  100%{height:72%}
+}
+.wl-danger-line{
+  position:absolute;left:-14px;right:-14px;
+  border-top:1.5px dashed var(--red);
+  bottom:62%;
+  display:flex;align-items:center;
+}
+.wl-danger-label{
+  font-size:9.5px;color:var(--red);white-space:nowrap;
+  font-weight:600;letter-spacing:.04em;position:absolute;left:22px;top:-9px;
+}
+.wl-reading{
+  font-family:'Barlow Condensed',sans-serif;
+  font-weight:700;font-size:28px;color:var(--red);
+  animation:wlCount 18s ease-in-out infinite alternate;
+}
+@keyframes wlCount{
+  0%{color:var(--amber)}
+  60%{color:var(--red)}
+  100%{color:var(--red)}
+}
+.floating-sos{
+  position:absolute;
+  background:var(--red);color:#fff;
+  border-radius:8px;padding:10px 14px;
+  font-size:12px;font-weight:600;
+  display:flex;align-items:center;gap:8px;
+  box-shadow:0 4px 20px rgba(214,59,59,.5);
+  animation:floatPop 3s ease-in-out infinite;
+  white-space:nowrap;
+}
+.floating-sos::before{
+  content:'';width:8px;height:8px;border-radius:50%;
+  background:#fff;animation:blink 1s infinite;flex-shrink:0;
+}
+@keyframes floatPop{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-6px)}
+}
+.sos-a{top:18%;left:12%}
+.sos-b{top:32%;left:42%;animation-delay:.8s}
+.sos-c{top:52%;left:20%;animation-delay:1.6s}
+
+/* ── Section base ──────────────────────────────────────────────────── */
+section{padding:96px 64px}
+.section-inner{max-width:1200px;margin:0 auto}
+.section-eyebrow{
+  font-size:11.5px;font-weight:600;
+  text-transform:uppercase;letter-spacing:.1em;
+  color:var(--amber);margin-bottom:16px;
+}
+.section-title{
+  font-family:'Barlow Condensed',sans-serif;
+  font-weight:800;font-size:clamp(38px,4vw,56px);
+  line-height:1.0;color:var(--mist);margin-bottom:16px;
+}
+.section-sub{
+  font-size:16px;color:var(--mist-dim);line-height:1.65;
+  max-width:520px;font-weight:400;
+}
+
+/* ── Live Stats Strip ──────────────────────────────────────────────── */
+.stats-strip{
+  background:var(--navy-card);
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  padding:0;
+}
+.stats-inner{
+  max-width:1200px;margin:0 auto;
+  display:grid;grid-template-columns:repeat(7,1fr);
+}
+.stat-cell{
+  padding:22px 20px;border-right:1px solid var(--border);
+  display:flex;flex-direction:column;gap:5px;
+}
+.stat-cell:last-child{border-right:none}
+.sc-val{
+  font-family:'Barlow Condensed',sans-serif;
+  font-weight:700;font-size:28px;line-height:1;color:var(--mist);
+}
+.sc-val.red{color:var(--red)}
+.sc-val.amber{color:var(--amber)}
+.sc-val.green{color:#4EC97B}
+.sc-label{font-size:11px;color:var(--mist-dim);font-weight:500;text-transform:uppercase;letter-spacing:.04em}
+.sc-trend{font-size:11px;font-weight:500}
+.sc-trend.up{color:var(--red)}
+.sc-trend.down{color:#4EC97B}
+
+/* ── How it works ──────────────────────────────────────────────────── */
+.how-section{background:var(--navy-mid)}
+.how-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:2px;margin-top:56px;background:var(--border);border-radius:12px;overflow:hidden;
+}
+.how-card{
+  background:var(--navy-card);padding:36px 32px;
+  position:relative;overflow:hidden;
+}
+.how-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;
+  height:3px;background:var(--blue-accent);
+}
+.how-card:nth-child(2)::before{background:var(--amber)}
+.how-card:nth-child(3)::before{background:var(--green)}
+.how-icon{
+  width:48px;height:48px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;margin-bottom:20px;
+}
+.ic-blue{background:rgba(58,142,204,.15)}
+.ic-amber{background:rgba(232,148,26,.15)}
+.ic-green{background:rgba(45,138,78,.15)}
+.how-title{
+  font-family:'Barlow Condensed',sans-serif;
+  font-weight:700;font-size:24px;color:var(--mist);margin-bottom:10px;
+}
+.how-body{font-size:14px;color:var(--mist-dim);line-height:1.7}
+.how-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:18px}
+.tag{
+  font-size:11px;font-weight:600;padding:3px 9px;border-radius:4px;
+  border:1px solid;
+}
+.tag-blue{border-color:rgba(58,142,204,.3);color:var(--blue-accent);background:rgba(58,142,204,.08)}
+.tag-amber{border-color:rgba(232,148,26,.3);color:var(--amber);background:rgba(232,148,26,.08)}
+.tag-green{border-color:rgba(45,138,78,.3);color:#4EC97B;background:rgba(45,138,78,.08)}
+
+/* ── Features ──────────────────────────────────────────────────────── */
+.features-section{background:var(--navy)}
+.features-list{
+  display:flex;flex-direction:column;gap:2px;
+  margin-top:56px;background:var(--border);border-radius:12px;overflow:hidden;
+}
+.feature-row{
+  background:var(--navy-card);
+  display:grid;grid-template-columns:1fr 2fr 1fr;
+  align-items:center;gap:0;
+  padding:28px 36px;transition:background .2s;cursor:default;
+}
+.feature-row:hover{background:var(--navy-light)}
+.f-label{
+  font-family:'Barlow Condensed',sans-serif;
+  font-weight:700;font-size:18px;color:var(--mist);
+}
+.f-desc{font-size:14px;color:var(--mist-dim);line-height:1.6;padding:0 40px}
+.f-badges{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap}
+.badge{
+  font-size:10.5px;font-weight:600;padding:4px 10px;
+  border-radius:20px;background:rgba(58,142,204,.12);
+  border:1px solid rgba(58,142,204,.2);color:var(--blue-accent);
+}
+.badge.red{background:rgba(214,59,59,.1);border-color:rgba(214,59,59,.2);color:#F08080}
+.badge.green{background:rgba(45,138,78,.1);border-color:rgba(45,138,78,.2);color:#4EC97B}
+.badge.amber{background:rgba(232,148,26,.1);border-color:rgba(232,148,26,.2);color:var(--amber)}
+
+/* ── Dashboard Preview ─────────────────────────────────────────────── */
+.preview-section{background:var(--navy-mid)}
+.preview-wrap{
+  margin-top:56px;border:1px solid var(--border-strong);
+  border-radius:14px;overflow:hidden;
+  box-shadow:0 32px 80px rgba(0,0,0,.5);
+}
+.preview-topbar{
+  background:rgba(15,39,67,.95);border-bottom:1px solid var(--border);
+  padding:10px 18px;
+  display:flex;align-items:center;gap:10px;
+}
+.dot-row{display:flex;gap:6px;align-items:center}
+.dot{width:10px;height:10px;border-radius:50%}
+.dot.r{background:#D63B3B}.dot.a{background:#E8941A}.dot.g{background:#2D8A4E}
+.preview-url{
+  flex:1;background:rgba(235,242,248,.05);border:1px solid var(--border);
+  border-radius:5px;padding:4px 12px;font-size:12px;color:var(--mist-dim);
+  text-align:center;
+}
+.preview-body{
+  background:var(--navy-card);padding:24px;
+  display:grid;grid-template-columns:180px 1fr 240px;gap:16px;
+  min-height:420px;
+}
+.pb-sidebar{display:flex;flex-direction:column;gap:8px}
+.pb-nav-item{
+  padding:9px 12px;border-radius:7px;font-size:12px;font-weight:500;
+  color:var(--mist-dim);display:flex;align-items:center;gap:8px;cursor:default;
+  transition:background .15s;
+}
+.pb-nav-item:hover,.pb-nav-item.active{background:rgba(58,142,204,.12);color:var(--mist)}
+.pb-nav-item.active{border-left:2px solid var(--amber);padding-left:10px}
+.pb-icon{font-size:15px}
+.pb-badge{
+  margin-left:auto;font-size:10px;padding:1px 6px;border-radius:8px;
+  background:rgba(214,59,59,.2);color:#F08080;font-weight:600;
+}
+.pb-main{display:flex;flex-direction:column;gap:12px}
+/* mini map mock */
+.mini-map{
+  background:linear-gradient(135deg,#0d2540 0%,#1a4060 100%);
+  border-radius:9px;flex:1;position:relative;overflow:hidden;min-height:240px;
+}
+.map-grid{
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(58,142,204,.06) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(58,142,204,.06) 1px,transparent 1px);
+  background-size:28px 28px;
+}
+.map-river{
+  position:absolute;
+  top:50%;left:0;right:0;height:18px;
+  background:linear-gradient(90deg,rgba(58,142,204,.3),rgba(58,142,204,.5),rgba(58,142,204,.3));
+  transform:translateY(-50%);
+  border-radius:9px;
+}
+.map-pin{
+  position:absolute;width:12px;height:12px;border-radius:50%;
+  border:2px solid #fff;cursor:default;
+  transition:transform .2s;
+}
+.map-pin:hover{transform:scale(1.4)}
+.map-pin.sos{background:var(--red);box-shadow:0 0 0 4px rgba(214,59,59,.25)}
+.map-pin.shelter{background:var(--green);box-shadow:0 0 0 4px rgba(45,138,78,.2)}
+.map-pin.boat{background:var(--blue-accent)}
+.map-zone{
+  position:absolute;border-radius:50%;
+  border:1.5px dashed;pointer-events:none;
+}
+.incident-strip{
+  display:grid;grid-template-columns:1fr 1fr;gap:8px;
+}
+.inc-card{
+  background:rgba(11,31,58,.6);border:1px solid;
+  border-radius:7px;padding:10px 12px;
+  font-size:11.5px;
+}
+.inc-card.crit{border-color:rgba(214,59,59,.3)}
+.inc-card.high{border-color:rgba(232,148,26,.25)}
+.inc-label{font-weight:600;color:var(--mist);margin-bottom:3px}
+.inc-meta{color:var(--mist-dim);font-size:10.5px}
+.inc-sev{
+  display:inline-block;font-size:9.5px;font-weight:700;
+  padding:2px 6px;border-radius:3px;margin-top:5px;
+  text-transform:uppercase;letter-spacing:.05em;
+}
+.sev-crit{background:rgba(214,59,59,.15);color:#F08080}
+.sev-high{background:rgba(232,148,26,.15);color:var(--amber)}
+
+.pb-right{display:flex;flex-direction:column;gap:8px}
+.resource-card{
+  background:rgba(11,31,58,.6);border:1px solid var(--border);
+  border-radius:8px;padding:12px 14px;
+}
+.rc-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:12px;font-weight:500;color:var(--mist)}
+.rc-sub{font-size:10.5px;color:var(--mist-dim)}
+.rc-bar{height:5px;background:rgba(235,242,248,.08);border-radius:3px;overflow:hidden;margin:6px 0 3px}
+.rc-fill{height:100%;border-radius:3px}
+
+/* ── SOS Section ───────────────────────────────────────────────────── */
+.sos-section{
+  background:linear-gradient(135deg,#2A0F0F 0%,#1A0B0B 100%);
+  border-top:1px solid rgba(214,59,59,.2);
+  border-bottom:1px solid rgba(214,59,59,.2);
+}
+.sos-inner{
+  max-width:1000px;margin:0 auto;
+  display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;
+}
+.sos-left .big-title{
+  font-family:'Barlow Condensed',sans-serif;
+  font-weight:800;font-size:clamp(40px,4.5vw,64px);
+  color:var(--mist);line-height:1;margin-bottom:18px;
+}
+.sos-left .big-title span{color:var(--red)}
+.sos-phone{
+  font-family:'Barlow Condensed',sans-serif;
+  font-weight:800;font-size:72px;color:var(--red);
+  line-height:1;margin-bottom:8px;
+  text-shadow:0 0 40px rgba(214,59,59,.4);
+}
+.sos-note{font-size:13px;color:rgba(214,59,59,.6);font-weight:500}
+.sos-form-wrap{
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(214,59,59,.2);border-radius:12px;
+  padding:28px 28px;
+}
+.sos-form-title{
+  font-family:'Barlow Condensed',sans-serif;font-weight:700;
+  font-size:22px;color:var(--mist);margin-bottom:20px;
+  display:flex;align-items:center;gap:8px;
+}
+.form-group{margin-bottom:14px}
+.form-label{display:block;font-size:12px;font-weight:500;color:var(--mist-dim);margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em}
+.form-input{
+  width:100%;background:rgba(235,242,248,.05);border:1px solid var(--border-strong);
+  border-radius:7px;padding:10px 12px;font-size:14px;color:var(--mist);
+  font-family:'Inter',sans-serif;transition:border-color .2s;
+}
+.form-input:focus{outline:none;border-color:rgba(214,59,59,.5)}
+.form-input::placeholder{color:rgba(235,242,248,.25)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.form-checks{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.form-check{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--mist-dim);cursor:pointer}
+.form-check input[type=checkbox]{accent-color:var(--red);width:14px;height:14px}
+.gps-btn{
+  width:100%;padding:9px;border-radius:7px;font-size:12px;font-weight:600;
+  background:rgba(58,142,204,.1);border:1px solid rgba(58,142,204,.25);
+  color:var(--blue-accent);cursor:pointer;transition:background .2s;
+  font-family:'Inter',sans-serif;margin-bottom:14px;
+}
+.gps-btn:hover{background:rgba(58,142,204,.18)}
+.submit-sos{
+  width:100%;padding:12px;border-radius:7px;font-size:15px;font-weight:700;
+  background:var(--red);color:#fff;border:none;cursor:pointer;
+  font-family:'Inter',sans-serif;transition:background .2s;
+  letter-spacing:.02em;
+}
+.submit-sos:hover{background:var(--red-dim)}
+#sos-success{
+  display:none;text-align:center;padding:20px;
+}
+.success-icon{font-size:48px;margin-bottom:12px}
+.success-title{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:24px;color:#4EC97B;margin-bottom:8px}
+.success-msg{font-size:13px;color:var(--mist-dim);line-height:1.6}
+
+/* ── Volunteer CTA ─────────────────────────────────────────────────── */
+.volunteer-section{background:var(--navy)}
+.vol-grid{
+  margin-top:56px;
+  display:grid;grid-template-columns:repeat(4,1fr);gap:16px;
+}
+.vol-card{
+  background:var(--navy-card);border:1px solid var(--border);
+  border-radius:12px;padding:28px 24px;text-align:center;
+  transition:border-color .2s,transform .2s;cursor:default;
+}
+.vol-card:hover{border-color:var(--border-strong);transform:translateY(-3px)}
+.vol-icon{font-size:32px;margin-bottom:16px}
+.vol-title{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:20px;color:var(--mist);margin-bottom:8px}
+.vol-desc{font-size:13px;color:var(--mist-dim);line-height:1.6}
+.vol-cta{
+  margin-top:40px;text-align:center;
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+}
+
+/* ── Zone Map ──────────────────────────────────────────────────────── */
+.zone-section{background:var(--navy-mid)}
+.zone-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:56px;align-items:start;
+}
+.zone-list{display:flex;flex-direction:column;gap:10px}
+.zone-item{
+  background:var(--navy-card);border:1px solid var(--border);
+  border-radius:10px;padding:16px 18px;
+  display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px;
+}
+.zone-sev-dot{
+  width:10px;height:10px;border-radius:50%;flex-shrink:0;
+}
+.zone-name{font-size:14px;font-weight:500;color:var(--mist)}
+.zone-meta{font-size:12px;color:var(--mist-dim);margin-top:2px}
+.zone-badge{
+  font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:12px;
+  text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;
+}
+.zb-crit{background:rgba(214,59,59,.15);color:#F08080;border:1px solid rgba(214,59,59,.2)}
+.zb-high{background:rgba(232,148,26,.12);color:var(--amber);border:1px solid rgba(232,148,26,.2)}
+.zb-mod{background:rgba(58,142,204,.1);color:var(--blue-accent);border:1px solid rgba(58,142,204,.2)}
+.zone-map-visual{
+  background:linear-gradient(135deg,#0d2540,#112644);
+  border:1px solid var(--border);border-radius:12px;
+  height:380px;position:relative;overflow:hidden;
+}
+.zmv-river{
+  position:absolute;top:44%;left:0;right:0;height:22px;
+  background:linear-gradient(90deg,rgba(58,142,204,.25),rgba(58,142,204,.5),rgba(58,142,204,.25));
+  border-radius:11px;
+}
+.zmv-zone{
+  position:absolute;border-radius:50%;border:1.5px dashed;opacity:.6;
+}
+.zmv-label{
+  position:absolute;font-size:10.5px;font-weight:600;color:var(--mist-dim);
+  letter-spacing:.04em;text-transform:uppercase;
+}
+.zmv-pin{
+  position:absolute;width:14px;height:14px;border-radius:50%;
+  border:2px solid #fff;cursor:pointer;
+  animation:zonePulse 2s ease infinite;
+}
+@keyframes zonePulse{0%,100%{box-shadow:0 0 0 0 rgba(214,59,59,.5)}50%{box-shadow:0 0 0 8px rgba(214,59,59,0)}}
+.zmv-water{
+  position:absolute;bottom:0;left:0;right:0;
+  background:linear-gradient(180deg,rgba(58,142,204,.15),rgba(10,50,90,.6));
+  animation:zoneWaterRise 20s ease-in-out infinite alternate;
+}
+@keyframes zoneWaterRise{0%{height:30%}100%{height:50%}}
+
+/* ── Footer ────────────────────────────────────────────────────────── */
+footer{
+  background:var(--navy-card);
+  border-top:1px solid var(--border);
+  padding:48px 64px 36px;
+}
+.footer-inner{max-width:1200px;margin:0 auto}
+.footer-top{
+  display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;margin-bottom:40px;
+}
+.footer-brand .brand-name{
+  font-family:'Barlow Condensed',sans-serif;
+  font-weight:700;font-size:22px;color:var(--mist);margin-bottom:10px;
+}
+.footer-desc{font-size:13px;color:var(--mist-dim);line-height:1.7;max-width:280px}
+.footer-col-title{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--mist-dim);margin-bottom:14px}
+.footer-links{display:flex;flex-direction:column;gap:9px}
+.footer-link{font-size:13px;color:rgba(235,242,248,.5);transition:color .2s}
+.footer-link:hover{color:var(--mist)}
+.footer-bottom{
+  display:flex;align-items:center;justify-content:space-between;
+  padding-top:24px;border-top:1px solid var(--border);
+  font-size:12px;color:rgba(235,242,248,.3);
+}
+.footer-bottom a{color:rgba(235,242,248,.4);transition:color .2s}
+.footer-bottom a:hover{color:var(--mist-dim)}
+.emergency-numbers{
+  display:flex;gap:20px;align-items:center;
+  font-size:12px;color:rgba(235,242,248,.4);
+}
+.emergency-numbers strong{color:var(--mist-dim)}
+
+/* ── Scroll reveal ─────────────────────────────────────────────────── */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
+.reveal.visible{opacity:1;transform:none}
+.reveal-delay-1{transition-delay:.1s}
+.reveal-delay-2{transition-delay:.2s}
+.reveal-delay-3{transition-delay:.3s}
+
+/* ── Mobile ────────────────────────────────────────────────────────── */
+@media(max-width:900px){
+  .hero{grid-template-columns:1fr;min-height:auto}
+  .hero-right{display:none}
+  .hero-left{padding:48px 24px}
+  .hero-stats{grid-template-columns:repeat(3,1fr)}
+  .how-grid{grid-template-columns:1fr}
+  .features-list .feature-row{grid-template-columns:1fr;gap:10px}
+  .f-desc{padding:0}
+  .f-badges{justify-content:flex-start}
+  .sos-inner{grid-template-columns:1fr}
+  .vol-grid{grid-template-columns:1fr 1fr}
+  .zone-grid{grid-template-columns:1fr}
+  .zone-map-visual{display:none}
+  .stats-inner{grid-template-columns:repeat(4,1fr)}
+  .stat-cell:nth-child(n+5){display:none}
+  .footer-top{grid-template-columns:1fr 1fr;gap:28px}
+  section{padding:64px 24px}
+  footer{padding:40px 24px 28px}
+  nav{padding:0 16px}
+  .nav-links{display:none}
+  .preview-body{grid-template-columns:1fr;min-height:auto}
+  .pb-sidebar,.pb-right{display:none}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<!-- ── Status Bar ─────────────────────────────────────────────────────────── -->
+<div class="status-bar" role="alert" aria-live="polite">
+  <span class="pulse-dot" aria-hidden="true"></span>
+  FLOOD WATCH ACTIVE — Bharathapuzha River at 4.2 m · Danger level exceeded
+  <span class="right" id="live-clock">Loading…</span>
+</div>
+
+<!-- ── Nav ───────────────────────────────────────────────────────────────── -->
+<nav role="navigation" aria-label="Main navigation">
+  <a href="#" class="nav-logo">
+    <span class="shield" aria-hidden="true">🛡️</span>
+    FloodGuard
+  </a>
+  <div class="nav-links">
+    <a href="#how" class="nav-link">How it Works</a>
+    <a href="#features" class="nav-link">Features</a>
+    <a href="#dashboard" class="nav-link">Dashboard</a>
+    <a href="#zones" class="nav-link">Live Zones</a>
+    <a href="#volunteer" class="nav-link">Volunteer</a>
+  </div>
+  <div class="nav-right">
+    <a href="#login" class="btn btn-ghost">Ops Login</a>
+    <a href="#sos" class="btn btn-red">🚨 Report Emergency</a>
+  </div>
+</nav>
+
+<!-- ── Hero ──────────────────────────────────────────────────────────────── -->
+<section class="hero" style="padding:0" aria-labelledby="hero-title">
+  <div class="hero-left">
+    <div class="hero-eyebrow" aria-label="Status: Active Response">
+      <span>⚡</span> Active Response — Palakkad District
+    </div>
+    <h1 class="hero-title" id="hero-title">
+      Respond Faster.<br/>
+      <em>Save More Lives.</em>
+    </h1>
+    <p class="hero-subtitle">
+      FloodGuard coordinates real-time flood rescue across Kerala — connecting civilians, volunteers, and district command through one live operations platform.
+    </p>
+    <div class="hero-actions">
+      <a href="#sos" class="btn btn-red" style="font-size:14px;padding:11px 24px">🚨 Submit SOS Report</a>
+      <a href="#dashboard" class="btn btn-amber" style="font-size:14px;padding:11px 24px">View Live Dashboard →</a>
+      <a href="#volunteer" class="btn btn-outline-mist" style="font-size:14px;padding:11px 22px">Join as Volunteer</a>
+    </div>
+    <div class="hero-stats" aria-label="Live statistics">
+      <div class="hero-stat">
+        <div class="hero-stat-val red" id="sos-count">23</div>
+        <div class="hero-stat-label">Active SOS</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-val amber">42</div>
+        <div class="hero-stat-label">Deployed Volunteers</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-val green">2,840</div>
+        <div class="hero-stat-label">Evacuated</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Water rise visual -->
+  <div class="hero-right" aria-hidden="true">
+    <div class="water-scene">
+      <!-- Buildings silhouette -->
+      <div class="flood-buildings">
+        <div class="bld" style="width:50px;height:160px;margin-right:4px"></div>
+        <div class="bld" style="width:35px;height:110px;margin-right:3px"></div>
+        <div class="bld" style="width:70px;height:200px;margin-right:4px"></div>
+        <div class="bld" style="width:45px;height:130px;margin-right:3px"></div>
+        <div class="bld" style="width:60px;height:180px;margin-right:4px"></div>
+        <div class="bld" style="width:40px;height:150px;margin-right:3px"></div>
+        <div class="bld" style="width:80px;height:220px;margin-right:4px"></div>
+        <div class="bld" style="width:35px;height:100px;margin-right:3px"></div>
+        <div class="bld" style="width:55px;height:170px;margin-right:4px"></div>
+        <div class="bld" style="width:45px;height:140px"></div>
+      </div>
+      <!-- Rising water -->
+      <div class="water-body">
+        <svg class="wave-svg" height="54" viewBox="0 0 900 54" preserveAspectRatio="none">
+          <path d="M0,27 C100,5 200,50 300,27 C400,5 500,50 600,27 C700,5 800,50 900,27 L900,54 L0,54 Z" fill="rgba(58,142,204,0.5)"/>
+          <path d="M0,35 C120,10 240,55 360,35 C480,10 600,55 720,35 C800,15 860,45 900,35 L900,54 L0,54 Z" fill="rgba(10,60,110,0.6)"/>
+        </svg>
+      </div>
+      <!-- SOS floating indicators -->
+      <div class="floating-sos sos-a" style="font-size:11px">Ward 7 · 4 trapped</div>
+      <div class="floating-sos sos-b" style="font-size:11px">NH544 Bridge risk</div>
+      <div class="floating-sos sos-c" style="font-size:11px">Medical needed · Zone B</div>
+      <!-- Water level gauge -->
+      <div class="water-level-indicator">
+        <span class="wl-label">Water Level</span>
+        <div class="wl-bar" style="position:relative">
+          <div class="wl-fill"></div>
+          <div class="wl-danger-line">
+            <span class="wl-danger-label">DANGER 3.5 m</span>
+          </div>
+        </div>
+        <div class="wl-reading" id="wl-reading">4.2 m</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Live Stats Strip ───────────────────────────────────────────────────── -->
+<div class="stats-strip" role="region" aria-label="Live operations metrics">
+  <div class="stats-inner">
+    <div class="stat-cell">
+      <div class="sc-val red">4.2 m</div>
+      <div class="sc-label">River Level</div>
+      <div class="sc-trend up">↑ +0.3 m / hr</div>
+    </div>
+    <div class="stat-cell">
+      <div class="sc-val amber">187 mm</div>
+      <div class="sc-label">Rainfall 24h</div>
+      <div class="sc-trend up">↑ Heavy</div>
+    </div>
+    <div class="stat-cell">
+      <div class="sc-val red">12</div>
+      <div class="sc-label">Affected Zones</div>
+      <div class="sc-trend up">↑ +2 since 06:00</div>
+    </div>
+    <div class="stat-cell">
+      <div class="sc-val green">8</div>
+      <div class="sc-label">Shelters Open</div>
+      <div class="sc-trend down">↑ Capacity 74%</div>
+    </div>
+    <div class="stat-cell">
+      <div class="sc-val green">2,840</div>
+      <div class="sc-label">Evacuated</div>
+      <div class="sc-trend down">↑ Safe</div>
+    </div>
+    <div class="stat-cell">
+      <div class="sc-val amber">14</div>
+      <div class="sc-label">Boats Active</div>
+      <div class="sc-trend">All deployed</div>
+    </div>
+    <div class="stat-cell">
+      <div class="sc-val red">23</div>
+      <div class="sc-label">Open SOS</div>
+      <div class="sc-trend up">↑ 6 new today</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── How It Works ───────────────────────────────────────────────────────── -->
+<section class="how-section" id="how" aria-labelledby="how-title">
+  <div class="section-inner">
+    <div class="reveal">
+      <div class="section-eyebrow">How FloodGuard Works</div>
+      <h2 class="section-title" id="how-title">From SOS to Safe — <br/>in Minutes</h2>
+      <p class="section-sub">Three roles. One platform. Every second of response time accounted for.</p>
+    </div>
+    <div class="how-grid">
+      <div class="how-card reveal reveal-delay-1">
+        <div class="how-icon ic-blue" aria-hidden="true">📱</div>
+        <div class="how-title">Civilians Report</div>
+        <p class="how-body">Anyone can submit a geotagged SOS from any device — no account required. The form captures location via GPS, severity, people count, and special needs like boats or medical help.</p>
+        <div class="how-tags">
+          <span class="tag tag-blue">No login needed</span>
+          <span class="tag tag-blue">GPS capture</span>
+          <span class="tag tag-blue">Works on 2G</span>
+        </div>
+      </div>
+      <div class="how-card reveal reveal-delay-2">
+        <div class="how-icon ic-amber" aria-hidden="true">⚡</div>
+        <div class="how-title">System Dispatches</div>
+        <p class="how-body">The moment an SOS arrives, it's broadcast via Kafka and WebSocket to every ops dashboard. The auto-dispatch engine finds the nearest qualified volunteer — certified rescue + boat if needed — and assigns them instantly.</p>
+        <div class="how-tags">
+          <span class="tag tag-amber">Real-time Kafka</span>
+          <span class="tag tag-amber">Auto-assign</span>
+          <span class="tag tag-amber">Haversine routing</span>
+        </div>
+      </div>
+      <div class="how-card reveal reveal-delay-3">
+        <div class="how-icon ic-green" aria-hidden="true">🤝</div>
+        <div class="how-title">Volunteers Respond</div>
+        <p class="how-body">Field volunteers receive their assignment, navigate to the location, and check in live via GPS. Coordinators watch every deployment on the live map and can re-assign if situations change.</p>
+        <div class="how-tags">
+          <span class="tag tag-green">Live GPS tracking</span>
+          <span class="tag tag-green">Role-based access</span>
+          <span class="tag tag-green">Offline fallback</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Features ───────────────────────────────────────────────────────────── -->
+<section class="features-section" id="features" aria-labelledby="features-title">
+  <div class="section-inner">
+    <div class="reveal">
+      <div class="section-eyebrow">Platform Capabilities</div>
+      <h2 class="section-title" id="features-title">Built for the chaos<br/>of real disasters</h2>
+    </div>
+    <div class="features-list reveal" role="list">
+      <div class="feature-row" role="listitem">
+        <div class="f-label">🗺️ Geospatial Live Map</div>
+        <div class="f-desc">Leaflet-powered real-time map shows flood zones (colour-coded by severity), active SOS pins, rescue boat positions, shelter locations, and volunteer GPS — all updating live via WebSocket.</div>
+        <div class="f-badges"><span class="badge">Leaflet</span><span class="badge">PostGIS</span><span class="badge">WebSocket</span></div>
+      </div>
+      <div class="feature-row" role="listitem">
+        <div class="f-label">🚨 SOS Auto-Dispatch</div>
+        <div class="f-desc">Civilian reports trigger immediate Kafka events. The Haversine-based spatial query finds the nearest qualified volunteer — optionally filtering for boat operators or medical-trained responders.</div>
+        <div class="f-badges"><span class="badge red">Kafka</span><span class="badge red">Priority Queue</span></div>
+      </div>
+      <div class="feature-row" role="listitem">
+        <div class="f-label">👥 Volunteer Coordination</div>
+        <div class="f-desc">Self-registration with skill profiles (rescue, medical, boat, 4WD). Zone assignment, live GPS check-ins, status tracking (Active / Deployed / Standby), and per-volunteer incident history.</div>
+        <div class="f-badges"><span class="badge green">Skill matching</span><span class="badge green">Live GPS</span></div>
+      </div>
+      <div class="feature-row" role="listitem">
+        <div class="f-label">📦 Resource Allocation</div>
+        <div class="f-desc">Track food, water, medical supplies, rescue boats, vehicles, and power across all depots. Automatic critical-low alerts fire when stock crosses thresholds — with Kafka broadcast and WebSocket dashboard push.</div>
+        <div class="f-badges"><span class="badge amber">Threshold alerts</span><span class="badge amber">Scheduled checks</span></div>
+      </div>
+      <div class="feature-row" role="listitem">
+        <div class="f-label">🔐 Secure Role-Based Access</div>
+        <div class="f-desc">JWT-authenticated ops dashboard with three roles: Admin, Coordinator, and Field Officer. Civilians submit SOS with zero friction — no account, no barrier to reaching help.</div>
+        <div class="f-badges"><span class="badge">Spring Security</span><span class="badge">JWT</span><span class="badge">RBAC</span></div>
+      </div>
+      <div class="feature-row" role="listitem">
+        <div class="f-label">📡 Real-Time Everything</div>
+        <div class="f-desc">STOMP WebSocket broker pushes all incident updates, volunteer movements, and resource changes instantly to every connected dashboard. No polling, no stale data during a crisis.</div>
+        <div class="f-badges"><span class="badge">STOMP</span><span class="badge">SockJS</span><span class="badge">&lt;100ms latency</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Dashboard Preview ───────────────────────────────────────────────────── -->
+<section class="preview-section" id="dashboard" aria-labelledby="dashboard-title">
+  <div class="section-inner">
+    <div class="reveal" style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:16px">
+      <div>
+        <div class="section-eyebrow">Operations Dashboard</div>
+        <h2 class="section-title" id="dashboard-title">Command from anywhere</h2>
+        <p class="section-sub">The ops dashboard gives coordinators a live view of every incident, volunteer, and resource — updating in real time as the situation unfolds.</p>
+      </div>
+      <a href="#login" class="btn btn-amber" style="padding:11px 22px;font-size:14px;flex-shrink:0">Open Dashboard →</a>
+    </div>
+    <div class="preview-wrap reveal">
+      <!-- Browser chrome -->
+      <div class="preview-topbar" aria-hidden="true">
+        <div class="dot-row"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div>
+        <div class="preview-url">floodguard.kerala.gov.in/dashboard</div>
+        <div style="font-size:11px;color:rgba(214,59,59,.8);font-weight:600">● LIVE</div>
+      </div>
+      <!-- Dashboard body -->
+      <div class="preview-body" aria-label="Dashboard preview">
+        <!-- Sidebar -->
+        <div class="pb-sidebar" aria-hidden="true">
+          <div style="font-size:10px;color:var(--mist-dim);text-transform:uppercase;letter-spacing:.08em;padding:4px 8px;margin-bottom:4px">Operations</div>
+          <div class="pb-nav-item active"><span class="pb-icon">🗺️</span>Live Map</div>
+          <div class="pb-nav-item"><span class="pb-icon">🔔</span>Incidents<span class="pb-badge">7</span></div>
+          <div class="pb-nav-item"><span class="pb-icon">👥</span>Volunteers</div>
+          <div class="pb-nav-item"><span class="pb-icon">📦</span>Resources</div>
+          <div class="pb-nav-item"><span class="pb-icon">📊</span>Analytics</div>
+          <div style="margin-top:auto;font-size:10px;color:var(--mist-dim);padding:12px 8px;border-top:1px solid var(--border)">
+            <div>River: <span style="color:var(--red);font-weight:600">4.2 m ↑</span></div>
+            <div style="margin-top:4px">Rainfall: <span style="color:var(--amber);font-weight:600">187mm</span></div>
+          </div>
+        </div>
+        <!-- Main map area -->
+        <div class="pb-main" aria-hidden="true">
+          <div style="display:flex;gap:8px;align-items:center;font-size:11px;color:var(--mist-dim)">
+            <span style="background:rgba(235,242,248,.05);border:1px solid var(--border);border-radius:5px;padding:4px 10px">Layer: All zones</span>
+            <span style="background:rgba(214,59,59,.1);border:1px solid rgba(214,59,59,.2);border-radius:5px;padding:4px 10px;color:#F08080">🚨 23 SOS active</span>
+            <span style="margin-left:auto;background:var(--amber);color:#0B1F3A;border-radius:5px;padding:4px 10px;font-weight:700;font-size:10.5px">+ Log SOS</span>
+          </div>
+          <div class="mini-map">
+            <div class="map-grid"></div>
+            <div class="map-river"></div>
+            <!-- flood zones -->
+            <div class="map-zone" style="width:130px;height:100px;border-color:rgba(214,59,59,.5);top:30%;left:5%;background:rgba(214,59,59,.06)"></div>
+            <div class="map-zone" style="width:110px;height:86px;border-color:rgba(58,142,204,.4);top:32%;left:33%;background:rgba(58,142,204,.05)"></div>
+            <div class="map-zone" style="width:90px;height:70px;border-color:rgba(232,148,26,.4);top:35%;right:8%;background:rgba(232,148,26,.05)"></div>
+            <!-- SOS pins -->
+            <div class="map-pin sos" style="top:42%;left:14%" title="SOS: Family trapped"></div>
+            <div class="map-pin sos" style="top:48%;left:45%" title="SOS: Elderly person"></div>
+            <div class="map-pin sos" style="top:40%;right:18%" title="SOS: Livestock"></div>
+            <!-- shelters -->
+            <div class="map-pin shelter" style="top:22%;left:38%" title="Shelter open"></div>
+            <div class="map-pin shelter" style="top:25%;left:20%" title="Shelter open"></div>
+            <!-- boats -->
+            <div class="map-pin boat" style="top:45%;left:28%"></div>
+            <div class="map-pin boat" style="top:47%;right:28%"></div>
+            <!-- river label -->
+            <div style="position:absolute;top:43%;left:50%;transform:translate(-50%,-50%);font-size:9px;color:rgba(58,142,204,.6);white-space:nowrap;font-weight:500">Bharathapuzha River</div>
+          </div>
+          <div class="incident-strip">
+            <div class="inc-card crit">
+              <div class="inc-label">Family of 4 — Ward 7</div>
+              <div class="inc-meta">Ground floor submerged · Elderly member</div>
+              <span class="inc-sev sev-crit">Critical</span>
+            </div>
+            <div class="inc-card crit">
+              <div class="inc-label">Bridge NH544 risk</div>
+              <div class="inc-meta">Water overtopping · Road closed</div>
+              <span class="inc-sev sev-crit">Critical</span>
+            </div>
+            <div class="inc-card high">
+              <div class="inc-label">Power outage — 3 wards</div>
+              <div class="inc-meta">Generator fuel 6h remaining</div>
+              <span class="inc-sev sev-high">High</span>
+            </div>
+            <div class="inc-card high">
+              <div class="inc-label">Medical supply low — Shelter 2</div>
+              <div class="inc-meta">ORS &amp; insulin critical</div>
+              <span class="inc-sev sev-high">High</span>
+            </div>
+          </div>
+        </div>
+        <!-- Resources panel -->
+        <div class="pb-right" aria-hidden="true">
+          <div style="font-size:10px;color:var(--mist-dim);text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px">Resource Status</div>
+          <div class="resource-card">
+            <div class="rc-header">Water Bottles<span style="color:var(--red);font-size:11px">⚠ Critical</span></div>
+            <div class="rc-sub">2,480 / 8,000 remaining</div>
+            <div class="rc-bar"><div class="rc-fill" style="width:31%;background:var(--red)"></div></div>
+            <div style="font-size:10px;color:var(--mist-dim)">31% remaining</div>
+          </div>
+          <div class="resource-card">
+            <div class="rc-header">Insulin Vials<span style="color:var(--red);font-size:11px">⚠ Critical</span></div>
+            <div class="rc-sub">36 / 200 remaining</div>
+            <div class="rc-bar"><div class="rc-fill" style="width:18%;background:var(--red)"></div></div>
+            <div style="font-size:10px;color:var(--mist-dim)">18% remaining</div>
+          </div>
+          <div class="resource-card">
+            <div class="rc-header">Rescue Boats<span style="color:var(--amber);font-size:11px">Low</span></div>
+            <div class="rc-sub">6 / 10 available</div>
+            <div class="rc-bar"><div class="rc-fill" style="width:60%;background:var(--amber)"></div></div>
+            <div style="font-size:10px;color:var(--mist-dim)">60% available</div>
+          </div>
+          <div class="resource-card">
+            <div class="rc-header">Food Packets<span style="color:#4EC97B;font-size:11px">OK</span></div>
+            <div class="rc-sub">3,400 / 5,000 remaining</div>
+            <div class="rc-bar"><div class="rc-fill" style="width:68%;background:var(--green)"></div></div>
+            <div style="font-size:10px;color:var(--mist-dim)">68% remaining</div>
+          </div>
+          <div class="resource-card">
+            <div class="rc-header">Generator Fuel<span style="color:var(--amber);font-size:11px">Low</span></div>
+            <div class="rc-sub">200 / 500 L remaining</div>
+            <div class="rc-bar"><div class="rc-fill" style="width:40%;background:var(--amber)"></div></div>
+            <div style="font-size:10px;color:var(--mist-dim)">40% remaining · ~6h</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SOS Report Form ─────────────────────────────────────────────────────── -->
+<section class="sos-section" id="sos" aria-labelledby="sos-title">
+  <div class="section-inner sos-inner">
+    <div class="sos-left reveal">
+      <div class="section-eyebrow">Emergency Reporting</div>
+      <h2 class="big-title" id="sos-title">In danger?<br/><span>Tell us now.</span></h2>
+      <p style="font-size:15px;color:rgba(235,242,248,.5);line-height:1.65;margin-bottom:36px;max-width:340px">
+        Submit your location and situation — your report goes directly to the district command room and triggers automatic volunteer dispatch.
+      </p>
+      <div style="margin-bottom:12px">
+        <div style="font-size:12px;color:rgba(214,59,59,.6);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">National Emergency</div>
+        <div class="sos-phone" aria-label="Emergency number 112">112</div>
+        <div class="sos-note">Kerala Disaster Management: 1077</div>
+      </div>
+    </div>
+    <div class="sos-form-wrap reveal reveal-delay-1">
+      <div id="sos-form-container">
+        <div class="sos-form-title">🚨 Report an Emergency</div>
+        <div class="form-group">
+          <label class="form-label" for="sos-title-input">What's happening? *</label>
+          <input class="form-input" id="sos-title-input" type="text" placeholder="e.g. Family trapped on 2nd floor, house flooding fast" required/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="sos-details">More details</label>
+          <textarea class="form-input" id="sos-details" rows="2" placeholder="Number of people, injuries, road access..." style="resize:vertical"></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="sos-name">Your name</label>
+            <input class="form-input" id="sos-name" type="text" placeholder="Full name"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="sos-phone">Contact number</label>
+            <input class="form-input" id="sos-phone" type="tel" placeholder="Mobile number"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="sos-affected">People affected</label>
+          <input class="form-input" id="sos-affected" type="number" min="1" placeholder="Number of people who need help"/>
+        </div>
+        <button class="gps-btn" onclick="captureGPS()" type="button">📍 Capture my GPS location automatically</button>
+        <div id="gps-status" style="font-size:11px;color:var(--mist-dim);margin-bottom:10px;display:none"></div>
+        <div class="form-checks">
+          <label class="form-check"><input type="checkbox" id="needs-boat"/> Rescue boat needed (flooded road)</label>
+          <label class="form-check"><input type="checkbox" id="needs-medical"/> Medical help needed</label>
+        </div>
+        <button class="submit-sos" onclick="submitSOS()" type="button">Submit Emergency Report →</button>
+        <p style="font-size:11px;color:rgba(235,242,248,.2);margin-top:10px;text-align:center">No account required · Report goes directly to district command</p>
+      </div>
+      <div id="sos-success">
+        <div class="success-icon">✅</div>
+        <div class="success-title">Report Received</div>
+        <p class="success-msg">Your emergency has been logged and broadcast to the district command room. The nearest available rescue team will be dispatched to your location. Stay in the highest accessible point in your building.</p>
+        <button onclick="resetSOS()" style="margin-top:18px;background:transparent;border:1px solid var(--border-strong);color:var(--mist-dim);padding:8px 18px;border-radius:6px;cursor:pointer;font-size:13px;font-family:Inter,sans-serif">Report another incident</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Volunteer Section ──────────────────────────────────────────────────── -->
+<section class="volunteer-section" id="volunteer" aria-labelledby="vol-title">
+  <div class="section-inner">
+    <div class="reveal" style="text-align:center">
+      <div class="section-eyebrow">Join the Response</div>
+      <h2 class="section-title" id="vol-title">Volunteers save lives</h2>
+      <p class="section-sub" style="margin:0 auto;text-align:center">Every skill counts in a disaster. Register once — get dispatched when your community needs you most.</p>
+    </div>
+    <div class="vol-grid">
+      <div class="vol-card reveal reveal-delay-1">
+        <div class="vol-icon">⛵</div>
+        <div class="vol-title">Boat Operators</div>
+        <p class="vol-desc">Navigate flooded streets to reach trapped families. Priority dispatch to SOS calls requiring water rescue.</p>
+      </div>
+      <div class="vol-card reveal reveal-delay-1">
+        <div class="vol-icon">🏥</div>
+        <div class="vol-title">Medical Responders</div>
+        <p class="vol-desc">Nurses, doctors, first-aid trained volunteers. Deployed to shelters and field medical emergencies.</p>
+      </div>
+      <div class="vol-card reveal reveal-delay-2">
+        <div class="vol-icon">🚛</div>
+        <div class="vol-title">Logistics Drivers</div>
+        <p class="vol-desc">4WD drivers and truck operators for supply runs between depots, shelters, and flooded areas.</p>
+      </div>
+      <div class="vol-card reveal reveal-delay-3">
+        <div class="vol-icon">📡</div>
+        <div class="vol-title">Comms & Coordination</div>
+        <p class="vol-desc">Ham radio operators, shelter coordinators, logistics planners. The backbone of every relief operation.</p>
+      </div>
+    </div>
+    <div class="vol-cta reveal">
+      <p style="font-size:14px;color:var(--mist-dim)">42 volunteers currently deployed across 4 zones · Registration takes 2 minutes</p>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center">
+        <a href="#" class="btn btn-amber" style="font-size:14px;padding:12px 28px">Register as Volunteer</a>
+        <a href="#" class="btn btn-ghost" style="font-size:14px;padding:12px 22px">View deployment guide</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Zone Map ──────────────────────────────────────────────────────────── -->
+<section class="zone-section" id="zones" aria-labelledby="zones-title">
+  <div class="section-inner">
+    <div class="reveal">
+      <div class="section-eyebrow">Live Zone Status</div>
+      <h2 class="section-title" id="zones-title">Palakkad District<br/>Flood Zones</h2>
+      <p class="section-sub">Four active flood zones — continuously updated as water levels change. Evacuation orders shown in real time.</p>
+    </div>
+    <div class="zone-grid">
+      <div class="zone-list reveal">
+        <div class="zone-item">
+          <div class="zone-sev-dot" style="background:var(--red)" aria-hidden="true"></div>
+          <div>
+            <div class="zone-name">Zone A — Ottapalam North</div>
+            <div class="zone-meta">Water: 4.2 m · 5 active SOS · 3,200 affected · Evacuation ordered</div>
+          </div>
+          <span class="zone-badge zb-crit">Critical</span>
+        </div>
+        <div class="zone-item">
+          <div class="zone-sev-dot" style="background:var(--amber)" aria-hidden="true"></div>
+          <div>
+            <div class="zone-name">Zone B — Shoranur</div>
+            <div class="zone-meta">Water: 3.1 m · 3 active SOS · 5,800 affected · Evacuation ordered</div>
+          </div>
+          <span class="zone-badge zb-high">High</span>
+        </div>
+        <div class="zone-item">
+          <div class="zone-sev-dot" style="background:var(--blue-accent)" aria-hidden="true"></div>
+          <div>
+            <div class="zone-name">Zone C — Pattambi</div>
+            <div class="zone-meta">Water: 2.8 m · 2 active SOS · 2,100 affected · Monitor closely</div>
+          </div>
+          <span class="zone-badge zb-high">High</span>
+        </div>
+        <div class="zone-item">
+          <div class="zone-sev-dot" style="background:var(--blue-accent)" style="opacity:.6" aria-hidden="true"></div>
+          <div>
+            <div class="zone-name">Zone D — Thrithala</div>
+            <div class="zone-meta">Water: 1.9 m · 1 active SOS · 800 affected · Watch</div>
+          </div>
+          <span class="zone-badge zb-mod">Moderate</span>
+        </div>
+        <div style="margin-top:12px;padding:16px;background:rgba(214,59,59,.06);border:1px solid rgba(214,59,59,.15);border-radius:10px">
+          <div style="font-size:12px;font-weight:600;color:#F08080;margin-bottom:6px">⚠ Evacuation Notice</div>
+          <p style="font-size:13px;color:var(--mist-dim);line-height:1.6">Zones A and B: all residents in low-lying areas and within 200m of the Bharathapuzha must evacuate immediately to designated shelters. Zone C: residents near river banks advised to move to upper floors.</p>
+        </div>
+      </div>
+      <!-- Zone visual map -->
+      <div class="zone-map-visual reveal reveal-delay-1" aria-hidden="true">
+        <div class="zmv-water"></div>
+        <div class="zmv-river"></div>
+        <!-- zones -->
+        <div class="zmv-zone" style="width:160px;height:120px;top:30%;left:5%;border-color:rgba(214,59,59,.5);background:rgba(214,59,59,.07)"></div>
+        <div class="zmv-zone" style="width:140px;height:110px;top:28%;left:35%;border-color:rgba(232,148,26,.5);background:rgba(232,148,26,.06)"></div>
+        <div class="zmv-zone" style="width:120px;height:95px;top:32%;right:8%;border-color:rgba(58,142,204,.45);background:rgba(58,142,204,.06)"></div>
+        <div class="zmv-zone" style="width:100px;height:80px;bottom:15%;left:50%;border-color:rgba(58,142,204,.3);background:rgba(58,142,204,.04)"></div>
+        <!-- labels -->
+        <div class="zmv-label" style="top:31%;left:8%;color:rgba(214,59,59,.7)">Zone A</div>
+        <div class="zmv-label" style="top:29%;left:38%;color:rgba(232,148,26,.7)">Zone B</div>
+        <div class="zmv-label" style="top:33%;right:11%;color:rgba(58,142,204,.7)">Zone C</div>
+        <div class="zmv-label" style="bottom:25%;left:53%;color:rgba(58,142,204,.6)">Zone D</div>
+        <!-- SOS pins -->
+        <div class="zmv-pin" style="top:40%;left:12%;background:var(--red)"></div>
+        <div class="zmv-pin" style="top:44%;left:18%;background:var(--red);animation-delay:.5s"></div>
+        <div class="zmv-pin" style="top:38%;left:40%;background:var(--amber)"></div>
+        <div class="zmv-pin" style="top:36%;right:12%;background:var(--amber);animation-delay:.9s"></div>
+        <!-- shelters (green squares) -->
+        <div style="position:absolute;top:20%;left:30%;width:14px;height:14px;background:var(--green);border:2px solid #fff;border-radius:3px" title="Shelter"></div>
+        <div style="position:absolute;top:18%;left:55%;width:14px;height:14px;background:var(--green);border:2px solid #fff;border-radius:3px" title="Shelter"></div>
+        <!-- river label -->
+        <div style="position:absolute;top:41%;left:50%;transform:translate(-50%,-50%);font-size:10px;color:rgba(58,142,204,.6);white-space:nowrap;font-weight:500;letter-spacing:.04em">BHARATHAPUZHA RIVER</div>
+        <!-- compass -->
+        <div style="position:absolute;bottom:14px;right:16px;font-size:18px;opacity:.3">🧭</div>
+        <!-- legend -->
+        <div style="position:absolute;bottom:12px;left:12px;display:flex;flex-direction:column;gap:5px">
+          <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:rgba(235,242,248,.4)"><span style="width:8px;height:8px;border-radius:50%;background:var(--red);display:inline-block"></span>SOS</div>
+          <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:rgba(235,242,248,.4)"><span style="width:8px;height:8px;border-radius:3px;background:var(--green);display:inline-block"></span>Shelter</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Footer ─────────────────────────────────────────────────────────────── -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="brand-name">🛡️ FloodGuard</div>
+        <p class="footer-desc">Kerala's hyper-local disaster management platform. Real-time SOS routing, volunteer coordination, and resource allocation for monsoon flood response.</p>
+        <div style="margin-top:16px;display:flex;gap:8px">
+          <span class="tag tag-blue" style="font-size:10px">Java 17</span>
+          <span class="tag tag-blue" style="font-size:10px">Spring Boot 3</span>
+          <span class="tag tag-blue" style="font-size:10px">React 18</span>
+          <span class="tag tag-blue" style="font-size:10px">Kafka</span>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">Response</div>
+        <div class="footer-links">
+          <a href="#sos" class="footer-link">Submit SOS</a>
+          <a href="#zones" class="footer-link">Live Zone Map</a>
+          <a href="#" class="footer-link">Find a Shelter</a>
+          <a href="#" class="footer-link">Evacuation Routes</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">Operations</div>
+        <div class="footer-links">
+          <a href="#" class="footer-link">Ops Dashboard</a>
+          <a href="#volunteer" class="footer-link">Volunteer Portal</a>
+          <a href="#" class="footer-link">Resource Tracker</a>
+          <a href="#" class="footer-link">API Docs</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">Project</div>
+        <div class="footer-links">
+          <a href="https://github.com" class="footer-link">GitHub Repo</a>
+          <a href="#" class="footer-link">Architecture</a>
+          <a href="#" class="footer-link">Tech Stack</a>
+          <a href="#" class="footer-link">Contribute</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 FloodGuard · Kerala Disaster Management · MIT License</span>
+      <div class="emergency-numbers">
+        <span>Emergency: <strong>112</strong></span>
+        <span>KSDMA: <strong>1077</strong></span>
+        <span>District: <strong>0491-2505408</strong></span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ── Clock ────────────────────────────────────────────────────────────────────
+function tick(){
+  const now=new Date();
+  const el=document.getElementById('live-clock');
+  if(el) el.textContent=now.toLocaleString('en-IN',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false,timeZone:'Asia/Kolkata'})+' IST · '+now.toLocaleDateString('en-IN',{day:'2-digit',month:'short'});
+}
+tick();setInterval(tick,1000);
+
+// ── Scroll reveal ────────────────────────────────────────────────────────────
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}});
+},{threshold:0.1});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+// ── Active nav on scroll ──────────────────────────────────────────────────────
+const sections=['how','features','dashboard','zones','volunteer','sos'];
+const navLinks=document.querySelectorAll('.nav-link');
+window.addEventListener('scroll',()=>{
+  const scrollY=window.scrollY+120;
+  sections.forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    if(scrollY>=el.offsetTop && scrollY<el.offsetTop+el.offsetHeight){
+      navLinks.forEach(l=>l.classList.remove('active'));
+      const active=document.querySelector(`.nav-link[href="#${id}"]`);
+      if(active)active.classList.add('active');
+    }
+  });
+});
+
+// ── GPS capture ──────────────────────────────────────────────────────────────
+function captureGPS(){
+  const btn=document.querySelector('.gps-btn');
+  const status=document.getElementById('gps-status');
+  btn.textContent='📍 Getting your location…';
+  btn.disabled=true;
+  status.style.display='block';
+  status.textContent='Requesting GPS…';
+  if(!navigator.geolocation){
+    status.textContent='GPS not available on this device.';
+    btn.textContent='📍 GPS unavailable';
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(
+    pos=>{
+      status.textContent=`✅ Location captured: ${pos.coords.latitude.toFixed(4)}°N, ${pos.coords.longitude.toFixed(4)}°E`;
+      status.style.color='#4EC97B';
+      btn.textContent='📍 Location captured ✓';
+      btn.style.background='rgba(45,138,78,.15)';
+      btn.style.borderColor='rgba(45,138,78,.3)';
+      btn.style.color='#4EC97B';
+    },
+    ()=>{
+      status.textContent='Location denied. Please enter address manually.';
+      status.style.color='var(--red)';
+      btn.textContent='📍 Try again';
+      btn.disabled=false;
+    }
+  );
+}
+
+// ── SOS form submit ───────────────────────────────────────────────────────────
+function submitSOS(){
+  const title=document.getElementById('sos-title-input').value.trim();
+  if(!title){
+    document.getElementById('sos-title-input').focus();
+    document.getElementById('sos-title-input').style.borderColor='var(--red)';
+    setTimeout(()=>{document.getElementById('sos-title-input').style.borderColor='';},2000);
+    return;
+  }
+  // Simulate API call delay
+  const btn=document.querySelector('.submit-sos');
+  btn.textContent='Submitting…';btn.disabled=true;
+  setTimeout(()=>{
+    document.getElementById('sos-form-container').style.display='none';
+    document.getElementById('sos-success').style.display='block';
+  },1200);
+}
+function resetSOS(){
+  document.getElementById('sos-form-container').style.display='block';
+  document.getElementById('sos-success').style.display='none';
+  document.getElementById('sos-title-input').value='';
+  document.getElementById('sos-details').value='';
+  document.getElementById('sos-name').value='';
+  document.getElementById('sos-phone').value='';
+  document.getElementById('sos-affected').value='';
+  document.getElementById('needs-boat').checked=false;
+  document.getElementById('needs-medical').checked=false;
+  document.querySelector('.submit-sos').textContent='Submit Emergency Report →';
+  document.querySelector('.submit-sos').disabled=false;
+  const status=document.getElementById('gps-status');
+  status.style.display='none';
+  const gpsBtn=document.querySelector('.gps-btn');
+  gpsBtn.textContent='📍 Capture my GPS location automatically';
+  gpsBtn.disabled=false;
+  gpsBtn.style.background='';gpsBtn.style.borderColor='';gpsBtn.style.color='';
+  // Increment SOS count
+  const el=document.getElementById('sos-count');
+  if(el) el.textContent=parseInt(el.textContent)+1;
+}
+
+// ── Animate water level reading ────────────────────────────────────────────
+let wl=4.2,dir=1;
+setInterval(()=>{
+  wl+=dir*0.02;
+  if(wl>=4.5)dir=-1;
+  if(wl<=3.9)dir=1;
+  const el=document.getElementById('wl-reading');
+  if(el)el.textContent=wl.toFixed(1)+' m';
+},800);
+</script>
+</body>
+</html>
